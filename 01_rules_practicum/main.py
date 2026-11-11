@@ -43,11 +43,24 @@ def show(example, use_framework=False, goal_override=None, verbose=False):
         for line in log:
             print("  " + line)
     if use_framework:
-        from framework import run_clips
+        from framework import run_clips, run_clips_backward
         clips_memory, clips_trace, clips_choice = run_clips(initial)
         if (clips_memory, clips_trace, clips_choice) != (memory, steps, chosen):
             raise RuntimeError("Обнаружено расхождение Python и CLIPS")
         print("CLIPS: факты, конфликтные множества, порядок правил и выбор совпадают.")
+        clips_log = []
+        clips_proof = run_clips_backward(f"candidate:{goal}", initial, log=clips_log)
+        if clips_proof != proof:
+            raise RuntimeError("Обнаружено расхождение обратного вывода Python и CLIPS")
+        print("Обратный вывод CLIPS: " + ("цель доказана" if clips_proof else "цель не доказана"))
+        if clips_proof:
+            for line in clips_proof.lines():
+                print("  " + line)
+        if verbose or clips_proof is None:
+            print("Попытки обратного вывода CLIPS:")
+            for line in clips_log:
+                print("  " + line)
+        print("CLIPS: результат и дерево обратного доказательства совпадают с Python.")
 
 
 def interactive():

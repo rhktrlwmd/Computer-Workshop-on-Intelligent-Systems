@@ -1,4 +1,12 @@
 test_all_128_profiles (test_system.FrameworkTests.test_all_128_profiles) ... ok
+test_backward_all_128_profiles (test_system.FrameworkTests.test_backward_all_128_profiles) ... ok
+test_backward_alternative_after_failure (test_system.FrameworkTests.test_backward_alternative_after_failure) ... ok
+test_backward_cycles (test_system.FrameworkTests.test_backward_cycles) ... ok
+test_backward_empty_rule_base (test_system.FrameworkTests.test_backward_empty_rule_base) ... ok
+test_backward_independent_goal_search (test_system.FrameworkTests.test_backward_independent_goal_search) ... ok
+test_backward_initial_goal (test_system.FrameworkTests.test_backward_initial_goal) ... ok
+test_backward_tries_another_branch_after_cycle (test_system.FrameworkTests.test_backward_tries_another_branch_after_cycle) ... ok
+test_backward_unconditional_rule (test_system.FrameworkTests.test_backward_unconditional_rule) ... ok
 test_clips_empty_profile (test_system.FrameworkTests.test_clips_empty_profile) ... ok
 test_clips_specificity_agenda (test_system.FrameworkTests.test_clips_specificity_agenda) ... ok
 test_clips_tie_order (test_system.FrameworkTests.test_clips_tie_order) ... ok
@@ -22,6 +30,6 @@ test_specificity (test_system.InferenceTests.test_specificity) ... ok
 test_true_false_and_unknown_input (test_system.InferenceTests.test_true_false_and_unknown_input) ... ok
 
 ----------------------------------------------------------------------
-Ran 22 tests in 1.853s
+Ran 30 tests in 2.215s
 
 OK

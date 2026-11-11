@@ -2,7 +2,7 @@
 import json
 from pathlib import Path
 from knowledge import RULES, ordered
-from engine import Step
+from engine import Proof, Step
 
 
 def clips_source() -> str:
@@ -66,6 +66,41 @@ def run_clips(initial: set[str]):
         elif fact.template.name == "selected":
             selected, reason = str(fact["book"]), str(fact["reason"])
     return memory, trace, (selected, reason)
+
+
+def run_clips_backward(goal: str, initial: set[str], rules=RULES,
+                       log: list[str] | None = None) -> Proof | None:
+    """Обратный поиск выполняет prove-goal в backward.clp, без forward()."""
+    try:
+        import clips
+    except ImportError as exc:
+        raise RuntimeError("Для CLIPS выполните: python -m pip install -r requirements.txt") from exc
+    env = clips.Environment()
+    env.load(str(Path(__file__).with_name("backward.clp")))
+    env.reset()
+    env.fact_duplication = True  # Сохранять повторные события разных ветвей поиска.
+    known = env.find_template("bc-known")
+    for value in sorted(initial):
+        known.assert_fact(value=value)
+    kb_rule = env.find_template("bc-rule")
+    for position, rule in enumerate(ordered(rules)):
+        kb_rule.assert_fact(rank=position, name=rule.id,
+                            conclusion=rule.conclusion, conditions=rule.conditions)
+    # Только целевой поиск: env.run() и Python backward() здесь не вызываются.
+    root = env.call("prove-goal", goal)
+    nodes = {}
+    for fact in env.facts():
+        if fact.template.name == "bc-proof":
+            nodes[fact.index] = (str(fact["goal"]), str(fact["rule"]) or None,
+                                 tuple(fact["children"]))
+        elif log is not None and fact.template.name == "bc-event":
+            log.append("  " * int(fact["depth"]) + str(fact["message"]))
+
+    def read_proof(index):
+        fact_goal, rule_id, children = nodes[index]
+        return Proof(fact_goal, rule_id, tuple(read_proof(child) for child in children))
+
+    return read_proof(root) if root else None
 
 
 if __name__ == "__main__":

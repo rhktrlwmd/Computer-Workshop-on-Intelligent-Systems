@@ -3,11 +3,12 @@ import importlib.util
 import itertools
 from pathlib import Path
 import unittest
+from unittest.mock import patch
 from engine import forward, backward
 from examples import EXAMPLES
 from knowledge import (BOOKS, INPUTS, RULES, Rule, make_facts,
                        select_book, candidate_ids)
-from framework import clips_source, run_clips
+from framework import clips_source, run_clips, run_clips_backward
 
 
 def all_profiles():
@@ -123,6 +124,59 @@ class InferenceTests(unittest.TestCase):
 
 @unittest.skipUnless(importlib.util.find_spec("clips"), "clipspy не установлен")
 class FrameworkTests(unittest.TestCase):
+    def test_backward_all_128_profiles(self):
+        for facts in all_profiles():
+            for book in BOOKS:
+                goal = f"candidate:{book}"
+                with self.subTest(facts=sorted(facts), goal=goal):
+                    self.assertEqual(run_clips_backward(goal, facts), backward(goal, facts))
+
+    def test_backward_alternative_after_failure(self):
+        log = []
+        proof = run_clips_backward("candidate:solaris", {"likes_science"}, log=log)
+        self.assertEqual(proof.rule, "R04")
+        self.assertTrue(any("Пробуем R06" in line for line in log))
+        self.assertTrue(any("Пробуем R04" in line for line in log))
+
+    def test_backward_cycles(self):
+        cycle = (Rule("A", ("b",), "a", 10), Rule("B", ("a",), "b", 10))
+        self.assertIsNone(run_clips_backward("a", set(), cycle))
+        rules = cycle + (Rule("C", ("seed",), "b", 1),)
+        self.assertEqual(run_clips_backward("a", {"seed"}, rules),
+                         backward("a", {"seed"}, rules))
+
+    def test_backward_unconditional_rule(self):
+        rules = (Rule("F", (), "fact", 1),)
+        self.assertEqual(run_clips_backward("fact", set(), rules),
+                         backward("fact", set(), rules))
+
+    def test_backward_initial_goal(self):
+        self.assertEqual(run_clips_backward("likes_science", {"likes_science"}),
+                         backward("likes_science", {"likes_science"}))
+
+    def test_backward_empty_rule_base(self):
+        self.assertIsNone(run_clips_backward("unknown", set(), ()))
+
+    def test_backward_independent_goal_search(self):
+        facts = {"likes_science", "likes_adventure", "likes_magic"}
+        before = set(facts)
+        log = []
+        with patch("engine.forward", side_effect=AssertionError("forward запрещён")), \
+             patch("engine.backward", side_effect=AssertionError("Python backward запрещён")), \
+             patch("framework.run_clips", side_effect=AssertionError("CLIPS forward запрещён")):
+            proof = run_clips_backward("candidate:martian", facts, log=log)
+        self.assertEqual(proof.rule, "R05")
+        self.assertEqual(facts, before)
+        self.assertFalse(any("Пробуем R03" in line or "Пробуем R11" in line for line in log))
+
+    def test_backward_tries_another_branch_after_cycle(self):
+        rules = (Rule("A", ("b", "c"), "goal", 10),
+                 Rule("B", ("c",), "b", 10),
+                 Rule("C", ("b",), "c", 10),
+                 Rule("D", ("seed",), "b", 1))
+        self.assertEqual(run_clips_backward("goal", {"seed"}, rules),
+                         backward("goal", {"seed"}, rules))
+
     def test_all_128_profiles(self):
         for facts in all_profiles():
             with self.subTest(facts=sorted(facts)):
