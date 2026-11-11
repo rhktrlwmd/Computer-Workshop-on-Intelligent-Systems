@@ -13,6 +13,7 @@ test_clips_tie_order (test_system.FrameworkTests.test_clips_tie_order) ... ok
 test_examples (test_system.FrameworkTests.test_examples) ... ok
 test_and_requires_all_conditions (test_system.InferenceTests.test_and_requires_all_conditions) ... ok
 test_backward_accepts_initial_goal (test_system.InferenceTests.test_backward_accepts_initial_goal) ... ok
+test_clips_source_has_all_rules (test_system.InferenceTests.test_clips_source_has_all_rules) ... ok
 test_cycle_with_alternative (test_system.InferenceTests.test_cycle_with_alternative) ... ok
 test_cycle_without_base (test_system.InferenceTests.test_cycle_without_base) ... ok
 test_empty_conditions (test_system.InferenceTests.test_empty_conditions) ... ok
@@ -20,7 +21,6 @@ test_empty_profile (test_system.InferenceTests.test_empty_profile) ... ok
 test_examples (test_system.InferenceTests.test_examples) ... ok
 test_fixed_point (test_system.InferenceTests.test_fixed_point) ... ok
 test_forward_backward_all_128_profiles (test_system.InferenceTests.test_forward_backward_all_128_profiles) ... ok
-test_generated_clips_is_current (test_system.InferenceTests.test_generated_clips_is_current) ... ok
 test_no_duplicate_conclusions (test_system.InferenceTests.test_no_duplicate_conclusions) ... ok
 test_no_input_mutation (test_system.InferenceTests.test_no_input_mutation) ... ok
 test_or_alternative_after_failure (test_system.InferenceTests.test_or_alternative_after_failure) ... ok
@@ -30,6 +30,6 @@ test_specificity (test_system.InferenceTests.test_specificity) ... ok
 test_true_false_and_unknown_input (test_system.InferenceTests.test_true_false_and_unknown_input) ... ok
 
 ----------------------------------------------------------------------
-Ran 30 tests in 2.215s
+Ran 30 tests in 2.006s
 
 OK

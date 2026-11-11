@@ -4,11 +4,11 @@ import itertools
 from pathlib import Path
 import unittest
 from unittest.mock import patch
-from engine import forward, backward
-from examples import EXAMPLES
-from knowledge import (BOOKS, INPUTS, RULES, Rule, make_facts,
-                       select_book, candidate_ids)
-from framework import clips_source, run_clips, run_clips_backward
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from main import (forward, backward, EXAMPLES, BOOKS, INPUTS, RULES, Rule,
+                  make_facts, select_book, candidate_ids, clips_source,
+                  run_clips, run_clips_backward)
 
 
 def all_profiles():
@@ -117,9 +117,10 @@ class InferenceTests(unittest.TestCase):
         _, steps = forward(set(INPUTS))
         self.assertEqual(len(steps), len({step.added for step in steps}))
 
-    def test_generated_clips_is_current(self):
-        self.assertEqual(Path(__file__).with_name("books.clp").read_text(encoding="utf-8"),
-                         clips_source())
+    def test_clips_source_has_all_rules(self):
+        source = clips_source()
+        for rule in RULES:
+            self.assertIn(f"(defrule {rule.id}\n", source)
 
 
 @unittest.skipUnless(importlib.util.find_spec("clips"), "clipspy не установлен")
@@ -161,9 +162,9 @@ class FrameworkTests(unittest.TestCase):
         facts = {"likes_science", "likes_adventure", "likes_magic"}
         before = set(facts)
         log = []
-        with patch("engine.forward", side_effect=AssertionError("forward запрещён")), \
-             patch("engine.backward", side_effect=AssertionError("Python backward запрещён")), \
-             patch("framework.run_clips", side_effect=AssertionError("CLIPS forward запрещён")):
+        with patch("main.forward", side_effect=AssertionError("forward запрещён")), \
+             patch("main.backward", side_effect=AssertionError("Python backward запрещён")), \
+             patch("main.run_clips", side_effect=AssertionError("CLIPS forward запрещён")):
             proof = run_clips_backward("candidate:martian", facts, log=log)
         self.assertEqual(proof.rule, "R05")
         self.assertEqual(facts, before)

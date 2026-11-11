@@ -19,14 +19,16 @@ cd 01_rules_practicum
 python3 main.py --demo
 ```
 
+Первая работа содержит три основных файла: main.py, backward.clp и README.md. Дополнительные материалы собраны в materials.
+
 Полная инструкция, включая установку CLIPS и запуск тестов: [README первой работы](01_rules_practicum/README.md).
 
 Материалы:
 
-- [Отчёт для преподавателя в Word](01_rules_practicum/Отчёт.docx).
-- [Текст отчёта](01_rules_practicum/Отчёт.md).
-- [Объяснения и подготовка к защите](01_rules_practicum/Защита.md).
-- [Результаты демонстрационных запусков](01_rules_practicum/demo_output.txt).
-- [Протокол автоматических проверок](01_rules_practicum/test_results.txt).
+- [Отчёт для преподавателя в Word](01_rules_practicum/materials/Отчёт.docx).
+- [Текст отчёта](01_rules_practicum/materials/Отчёт.md).
+- [Объяснения и подготовка к защите](01_rules_practicum/materials/Защита.md).
+- [Результаты демонстрационных запусков](01_rules_practicum/materials/demo_output.txt).
+- [Протокол автоматических проверок](01_rules_practicum/materials/test_results.txt).
 
 Следующие задания можно добавлять в соседние папки с номерами `02_…`, `03_…` и далее, дополняя таблицу работ.
